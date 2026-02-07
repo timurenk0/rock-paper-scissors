@@ -49,20 +49,70 @@ document.querySelectorAll(".choose").forEach(btn => {
     });
 });
 
+const waitingText = document.getElementById("waiting");
+onSnapshot(gameRef, (docSnap) => {
+    const game = docSnap.data();
+    if (!game) return;
+
+    if (game.ready1 && game.ready2) {
+        waitingText.style.display = "none";
+        gameBody.style.display = "flex";
+    }
+
+    if ((currPlayer === "babayka" && game.choice1) || (currPlayer === "b9ka" && game.choice2)) {
+        choiceButtons.forEach(b=>b.disabled = true);
+    }
+
+    if (game.choice1 && game.choice2) {
+        const winner = getWinner(game.choice1, game.choice2);
+        alert(`And the winner is... ${winner}!`);
+    }
+});
+
+function getWinner(a, b) {
+    if (a === b) return "Tie";
+
+    const winCombs = {
+        "rock": "scissors",
+        "paper": "rock",
+        "scissors": "paper"
+    };
+
+    return winCombs[a] === b ? "babayka" : "b9ka";
+}
+
 document.getElementById("start").addEventListener("click", ()=>{
 
     if (!currPlayer) {
-        console.error("Chooose player first!");
+        alert("Chooose player first!");
         return;
     }
+    waitingText.innerText = "Waiting for another player...";
+});
 
-    onSnapshot(gameRef, (docSnap) => {
-        const game = docSnap.data();
-    
-        if (currPlayer === "babayka") {
-            gameBody.style.display = "flex";
-        } else if (currPlayer === "b9ka") {
-            gameBody.style.display = "flex";
-        }  
+const readyBtn = document.getElementById("ready");
+readyBtn.addEventListener("click", async () => {
+    const readyField = currPlayer === "babayka" ? "ready1" : "ready2";
+
+    await updateDoc( gameRef, {
+        [readyField]: true
+     });
+     
+    readyBtn.disabled = true;
+    readyBtn.classList.add("active");
+});
+
+const choiceButtons = document.querySelectorAll(".choice");
+choiceButtons.forEach(btn => {
+    btn.addEventListener("click", async () => {
+        const choice = btn.id;
+
+        const choiceField = currPlayer === "babayka" ? "choice1" : "choice2";
+
+        await updateDoc(gameRef, {
+            [choiceField]: choice
+        });
+
+        choiceButtons.forEach(b => b.disabled = true);
     })
 })
