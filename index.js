@@ -116,10 +116,9 @@ readyBtn.addEventListener("click", async () => {
 const choiceButtons = document.querySelectorAll(".choice");
 choiceButtons.forEach(btn => {
     btn.addEventListener("click", async () => {
-        const choice = btn.id;
+        playerChoice = btn.id;
 
-
-        playerChoice = choice;
-
+        choiceButtons.forEach(b => b.classList.remove("selected"));
+        btn.classList.add("selected")
     })
 })

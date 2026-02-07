@@ -50,11 +50,15 @@ html, body {
     gap: 64px;
 }
 
-.player > button {
+.player > .choice {
     width: 128px;
     height: 128px;
     border-radius: 100%;
     cursor: pointer;
+}
+
+.player > .choice.selected {
+    background-color: lightcoral;
 }
 
 #game > #ready {
