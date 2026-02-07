@@ -23,8 +23,6 @@ const db = getFirestore(app);
 
 const gameRef = doc(db, "game-state", "Ekd4K3XtgjXDVQCZ0ill");
 
-const snap = await getDoc(gameRef);
-if (!snap.exists()) {
     await setDoc(gameRef, {
         player1: "babayka",
         player2: "b9ka",
@@ -32,9 +30,8 @@ if (!snap.exists()) {
         ready2: false,
         choice1: "",
         choice2: "",
-        roundResolved: false,
     });
-}
+
 
 
 const gameBody = document.getElementById("game");
@@ -63,30 +60,38 @@ onSnapshot(gameRef, async (docSnap) => {
     const game = docSnap.data();
     if (!game) return;
 
+    if (!currPlayer) return;
+
 
     if ((currPlayer === "babayka" && game.choice1) || (currPlayer === "b9ka" && game.choice2)) {
         choiceButtons.forEach(b=>b.disabled = true);
     }
 
-    if (game.choice1 && game.choice2 && !game.roundResolved) {
+    if (game.choice1.length !== 0 && game.choice2.length !== 0) {
         const winner = getWinner(game);
 
-        await updateDoc(gameRef, {
-            roundResolved: true
-        })
-
         alert(`And the winner is... ${winner}!`);
+
+        await updateDoc(gameRef, {
+            choice1: "",
+            choice2: "",
+            ready1: false,
+            ready2: false,
+        });
     }
 });
 
 function getWinner(game) {
     const { choice1, choice2, player1, player2 } = game;
 
+    if (choice1 === choice2) return "Tie"
+
     const winCombs = {
         rock: "scissors",
         paper: "rock",
         scissors: "paper"
     };
+
 
     return winCombs[choice1] === choice2 ? player1 : player2;
 }
@@ -111,6 +116,8 @@ readyBtn.addEventListener("click", async () => {
     readyBtn.classList.add("active");
     
     waitingText.innerText = "Waiting for another kitten..."
+
+    console.log(gameRef)
 });
 
 const choiceButtons = document.querySelectorAll(".choice");
