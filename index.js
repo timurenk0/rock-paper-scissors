@@ -3,6 +3,7 @@ import {
   getFirestore,
   doc,
   setDoc,
+  getDoc,
   updateDoc,
   onSnapshot
 } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
@@ -22,14 +23,18 @@ const db = getFirestore(app);
 
 const gameRef = doc(db, "game-state", "Ekd4K3XtgjXDVQCZ0ill");
 
-await setDoc(gameRef, {
-    player1: "babayka",
-    player2: "b9ka",
-    ready1: false,
-    ready2: false,
-    choice1: "",
-    choice2: "",
-});
+const snap = await getDoc(gameRef);
+if (!snap.exists()) {
+    await setDoc(gameRef, {
+        player1: "babayka",
+        player2: "b9ka",
+        ready1: false,
+        ready2: false,
+        choice1: "",
+        choice2: "",
+        roundResolved: false,
+    });
+}
 
 
 const gameBody = document.getElementById("game");
@@ -50,7 +55,7 @@ document.querySelectorAll(".choose").forEach(btn => {
 });
 
 const waitingText = document.getElementById("waiting");
-onSnapshot(gameRef, (docSnap) => {
+onSnapshot(gameRef, async (docSnap) => {
     const game = docSnap.data();
     if (!game) return;
 
@@ -63,22 +68,27 @@ onSnapshot(gameRef, (docSnap) => {
         choiceButtons.forEach(b=>b.disabled = true);
     }
 
-    if (game.choice1 && game.choice2) {
-        const winner = getWinner(game.choice1, game.choice2);
+    if (game.choice1 && game.choice2 && !game.roundResolved) {
+        const winner = getWinner(game);
+
+        await updateDoc(gameRef, {
+            roundResolved: true
+        })
+
         alert(`And the winner is... ${winner}!`);
     }
 });
 
-function getWinner(a, b) {
-    if (a === b) return "Tie";
+function getWinner(game) {
+    const { choice1, choice2, player1, player2 } = game;
 
     const winCombs = {
-        "rock": "scissors",
-        "paper": "rock",
-        "scissors": "paper"
+        rock: "scissors",
+        paper: "rock",
+        scissors: "paper"
     };
 
-    return winCombs[a] === b ? "babayka" : "b9ka";
+    return winCombs[choice1] === choice2 ? player1 : player2;
 }
 
 document.getElementById("start").addEventListener("click", ()=>{
