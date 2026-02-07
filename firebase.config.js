@@ -4,7 +4,7 @@ import { initializeApp } from "firebase/app";
 // https://firebase.google.com/docs/web/setup#available-libraries
 
 // Your web app's Firebase configuration
-export const firebaseConfig = {
+const firebaseConfig = {
   apiKey: "AIzaSyB6PXoo7c9zxa5wun3wOhFErw3ngkVnRUY",
   authDomain: "rock-paper-scissors-d4cdc.firebaseapp.com",
   projectId: "rock-paper-scissors-d4cdc",

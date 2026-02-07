@@ -3,3 +3,68 @@
     padding: 0;
     font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
 }
+
+html, body {
+    max-width: 100vw;
+    max-height: 100vh;
+    overflow: hidden;
+}
+
+.choose-player {
+    width: 100%;
+    padding: 16px 0;
+    display: flex;
+    justify-content: center;
+    gap: 16px;
+}
+
+.choose-player > button {
+    border: 0;
+    background-color: orangered;
+    color: white;
+    padding: 8px 16px;
+    border-radius: 16px;
+    cursor: pointer;
+}
+
+.choose-player > button:disabled {
+    background-color: gray;
+    text-decoration: line-through;
+    cursor: not-allowed;
+}
+
+.choose-player > #start {
+    background-color: green;
+}
+
+#game {
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+}
+
+#game > .player {
+    display: flex;
+    padding: 256px 0;
+    justify-content: center; 
+    gap: 64px;
+}
+
+.player > button {
+    width: 128px;
+    height: 128px;
+    border-radius: 100%;
+    cursor: pointer;
+}
+
+#game > #ready {
+    margin: 0 auto;
+    padding: 8px 32px;
+    border: 0;
+    border-radius: 8px;
+    background-color: skyblue;
+}
+
+#game > #ready.active {
+    background-color: steelblue;
+}
