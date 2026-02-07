@@ -97,7 +97,8 @@ document.getElementById("start").addEventListener("click", ()=>{
         alert("Chooose player first!");
         return;
     }
-    waitingText.innerText = "Waiting for another player...";
+    
+    gameBody.style.display = "flex";
 });
 
 const readyBtn = document.getElementById("ready");
@@ -110,6 +111,7 @@ readyBtn.addEventListener("click", async () => {
      
     readyBtn.disabled = true;
     readyBtn.classList.add("active");
+    waitingText.innerText = "Waiting for another kitten..."
 });
 
 const choiceButtons = document.querySelectorAll(".choice");
