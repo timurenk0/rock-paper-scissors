@@ -40,7 +40,9 @@ if (!snap.exists()) {
 const gameBody = document.getElementById("game");
 gameBody.style.display = "none";
 let currPlayer = "";
+let playerChoice = "";
 
+// Choose player
 document.querySelectorAll(".choose").forEach(btn => {
     btn.addEventListener("click", () => {
         currPlayer = btn.innerText;
@@ -50,19 +52,17 @@ document.querySelectorAll(".choose").forEach(btn => {
             button.disabled = true;
         });
 
-        
+        gameBody.style.display = "flex";
     });
 });
 
 const waitingText = document.getElementById("waiting");
+
+// Game real-time update
 onSnapshot(gameRef, async (docSnap) => {
     const game = docSnap.data();
     if (!game) return;
 
-    if (game.ready1 && game.ready2) {
-        waitingText.style.display = "none";
-        gameBody.style.display = "flex";
-    }
 
     if ((currPlayer === "babayka" && game.choice1) || (currPlayer === "b9ka" && game.choice2)) {
         choiceButtons.forEach(b=>b.disabled = true);
@@ -91,26 +91,25 @@ function getWinner(game) {
     return winCombs[choice1] === choice2 ? player1 : player2;
 }
 
-document.getElementById("start").addEventListener("click", ()=>{
-
-    if (!currPlayer) {
-        alert("Chooose player first!");
-        return;
-    }
-    
-    gameBody.style.display = "flex";
-});
-
+// Ready button confirm logic
 const readyBtn = document.getElementById("ready");
 readyBtn.addEventListener("click", async () => {
+    if (!playerChoice) {
+        alert("Make your move first!!")
+        return;
+    }
     const readyField = currPlayer === "babayka" ? "ready1" : "ready2";
+    const choiceField = currPlayer === "babayka" ? "choice1" : "choice2";
 
     await updateDoc( gameRef, {
-        [readyField]: true
-     });
-     
+        [readyField]: true,
+        [choiceField]: playerChoice
+    });
+    
+    choiceButtons.forEach(b => b.disabled = true);
     readyBtn.disabled = true;
     readyBtn.classList.add("active");
+    
     waitingText.innerText = "Waiting for another kitten..."
 });
 
@@ -119,12 +118,8 @@ choiceButtons.forEach(btn => {
     btn.addEventListener("click", async () => {
         const choice = btn.id;
 
-        const choiceField = currPlayer === "babayka" ? "choice1" : "choice2";
 
-        await updateDoc(gameRef, {
-            [choiceField]: choice
-        });
+        playerChoice = choice;
 
-        choiceButtons.forEach(b => b.disabled = true);
     })
 })
